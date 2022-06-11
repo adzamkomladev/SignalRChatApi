@@ -1,6 +1,21 @@
+using SignalRChatApi.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddCors(o =>
+{
+    o.AddPolicy("AllowAllHeaders", b =>
+    {
+        b.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+    });
+});
+
+builder.Services.AddSignalR(o =>
+{
+    o.EnableDetailedErrors = true;
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -18,8 +33,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseCors("AllowAllHeaders");
 
-app.MapControllers();
+app.UseRouting();
+
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<ChatHub>("/chat");
+});
 
 app.Run();
