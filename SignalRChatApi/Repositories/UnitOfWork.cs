@@ -8,10 +8,7 @@ public class UnitOfWork : IUnitOfWork
 
     private IUserRepository _users;
 
-    public UnitOfWork(ChatApiDbContext context)
-    {
-        _context = context;
-    }
+    public UnitOfWork(ChatApiDbContext context) => _context = context;
 
     public void Dispose()
     {
@@ -21,8 +18,5 @@ public class UnitOfWork : IUnitOfWork
 
     public IUserRepository Users => _users ??= new UserRepository(_context);
 
-    public async Task Complete()
-    {
-        await _context.SaveChangesAsync();
-    }
+    public async Task Complete() => await _context.SaveChangesAsync();
 }
