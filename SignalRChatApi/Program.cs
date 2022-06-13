@@ -1,4 +1,11 @@
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.EntityFrameworkCore;
+using SignalRChatApi.Database;
 using SignalRChatApi.Hubs;
+using SignalRChatApi.Middlewares;
+using SignalRChatApi.Repositories;
+using SignalRChatApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +24,24 @@ builder.Services.AddSignalR(o =>
     o.EnableDetailedErrors = true;
 });
 
-builder.Services.AddControllers();
+builder.Services.AddDbContext<ChatApiDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.DefaultIgnoreCondition =
+        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+});
+
+builder.Services.AddTransient<ExceptionMiddleware>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -31,12 +55,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAllHeaders");
 
 app.UseRouting();
-
 
 app.UseEndpoints(endpoints =>
 {
