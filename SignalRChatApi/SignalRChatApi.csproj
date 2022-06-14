@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Database\Configurations\" />
+    <Folder Include="Data\Dtos\Common\" />
     <Folder Include="Data\Dtos\Users\" />
     <Folder Include="Data\Responses\" />
     <Folder Include="Hubs\" />

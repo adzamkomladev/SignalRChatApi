@@ -30,4 +30,16 @@ public class UserService : IUserService
 
         return user;
     }
+
+    public async Task<FilteredUsersDto> GetAllUsersFilteredAndPaginated(GetAllUsersFilterDto filterDto)
+    {
+        var users = await _unitOfWork.Users.GetAllUsers(filterDto);
+        var meta = await _unitOfWork.Users.GetAllUsersMeta(filterDto);
+
+        return new FilteredUsersDto
+        {
+            Data = users,
+            Meta = meta
+        };
+    }
 }

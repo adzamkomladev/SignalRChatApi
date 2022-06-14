@@ -9,12 +9,12 @@ namespace SignalRChatApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
+        private readonly ILogger<UsersController> _logger;
         private readonly IUserService _userService;
 
-        public UserController(ILogger<UserController> logger, IUserService userService)
+        public UsersController(ILogger<UsersController> logger, IUserService userService)
         {
             _logger = logger;
             _userService = userService;
@@ -39,6 +39,19 @@ namespace SignalRChatApi.Controllers
             {
                 Success = true,
                 Data = user
+            });
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll([FromQuery] GetAllUsersFilterDto query)
+        {
+            _logger.LogInformation("GET ALL USERS FILTERED");
+
+            return Ok(new BaseResponse
+            {
+                Success = true,
+                Data = await _userService.GetAllUsersFilteredAndPaginated(query)
             });
         }
     }
