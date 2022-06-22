@@ -7,6 +7,7 @@ namespace SignalRChatApi.Database;
 public class ChatApiDbContext : DbContext
 {
     public DbSet<User> Users => Set<User>();
+    public DbSet<UserSetting> UserSettings => Set<UserSetting>();
 
     public ChatApiDbContext(DbContextOptions<ChatApiDbContext> options) : base(options)
     { }
